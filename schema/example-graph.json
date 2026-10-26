@@ -1,0 +1,27 @@
+{
+  "$schema": "./graph.schema.json",
+  "name": "Shortcut or Detour?",
+  "description": "Undirected and weighted. The direct-looking route to G is the most expensive one.",
+  "note": "BFS takes the path with the fewest edges (S-C-G, cost 9); UCS and A* find the cheaper S-A-B-G (cost 6).",
+  "directed": false,
+  "weighted": true,
+  "difficulty": "easy",
+  "dlsLimit": 3,
+  "start": "S",
+  "goal": "G",
+  "nodes": [
+    { "id": "S", "x": 90, "y": 250, "h": 5 },
+    { "id": "A", "x": 300, "y": 110, "h": 4 },
+    { "id": "B", "x": 520, "y": 110, "h": 2 },
+    { "id": "C", "x": 400, "y": 390, "h": 3 },
+    { "id": "G", "x": 700, "y": 250, "h": 0 }
+  ],
+  "edges": [
+    { "from": "S", "to": "A", "w": 2 },
+    { "from": "A", "to": "B", "w": 2 },
+    { "from": "B", "to": "G", "w": 2 },
+    { "from": "S", "to": "C", "w": 3 },
+    { "from": "C", "to": "G", "w": 6 },
+    { "from": "A", "to": "C", "w": 4 }
+  ]
+}

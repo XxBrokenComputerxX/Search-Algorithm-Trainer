@@ -1,0 +1,141 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://search-algorithm-trainer.local/schema/graph.schema.json",
+  "title": "Search Algorithm Trainer graph",
+  "description": "A search problem for the Search Algorithm Trainer. Import it in the app via Graph editor → Import JSON. Rules JSON Schema cannot express (checked by the app on import/save): every edge's \"from\"/\"to\" and the \"start\"/\"goal\" must be ids of existing nodes; node ids must be unique; no self-loops. Greedy and A* are only offered if EVERY node has an \"h\" value.",
+  "type": "object",
+  "required": ["name", "nodes", "edges", "start", "goal"],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "Optional pointer to this schema, for editor autocompletion. Ignored by the app."
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Optional. The app assigns a fresh id on import, so this is only informative."
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "description": "Shown in the graph lists."
+    },
+    "description": {
+      "type": "string",
+      "description": "One or two sentences shown under the name."
+    },
+    "note": {
+      "type": "string",
+      "description": "Optional teaching note shown in the side panel while playing (e.g. explain a trap in this graph)."
+    },
+    "directed": {
+      "type": "boolean",
+      "default": false,
+      "description": "true: edges can only be followed from → to. false: every edge works in both directions."
+    },
+    "weighted": {
+      "type": "boolean",
+      "default": true,
+      "description": "false: every edge costs 1 and edge weights are ignored."
+    },
+    "difficulty": {
+      "enum": ["easy", "medium", "hard"],
+      "default": "medium",
+      "description": "Tag shown on the graph card. Custom graphs can be played in every difficulty mode."
+    },
+    "dlsLimit": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 30,
+      "default": 2,
+      "description": "Default depth limit ℓ for depth-limited search."
+    },
+    "start": {
+      "$ref": "#/$defs/nodeId",
+      "description": "Id of the start node."
+    },
+    "goal": {
+      "$ref": "#/$defs/nodeId",
+      "description": "Id of the goal node."
+    },
+    "nodes": {
+      "type": "array",
+      "minItems": 2,
+      "items": { "$ref": "#/$defs/node" }
+    },
+    "edges": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/edge" }
+    }
+  },
+  "$defs": {
+    "nodeId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9 _-]{0,19}$",
+      "description": "Letters, digits, space, _ or -; max 20 characters. Ids of 1-2 characters are drawn inside the circle, longer ids as a label below it. Alphabetical order of ids decides tie-breaking and successor order."
+    },
+    "node": {
+      "type": "object",
+      "required": ["id", "x", "y"],
+      "properties": {
+        "id": { "$ref": "#/$defs/nodeId" },
+        "x": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 800,
+          "description": "Horizontal position on the 800 × 500 canvas. Keep 30-770 so the node is fully visible."
+        },
+        "y": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 500,
+          "description": "Vertical position on the 800 × 500 canvas (0 = top). Keep 30-470 so the node is fully visible."
+        },
+        "h": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Heuristic estimate of the cost from this node to the goal. Required on every node for Greedy and A*. h(goal) should be 0. Admissible = never larger than the true cost; consistent = h(n) ≤ cost(n, n') + h(n') for every edge."
+        }
+      },
+      "additionalProperties": false
+    },
+    "edge": {
+      "type": "object",
+      "required": ["from", "to"],
+      "properties": {
+        "from": { "$ref": "#/$defs/nodeId" },
+        "to": { "$ref": "#/$defs/nodeId" },
+        "w": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "default": 1,
+          "description": "Step cost (must be > 0). Ignored when the graph is unweighted. If the same pair is connected twice, the cheaper edge is used."
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "examples": [
+    {
+      "name": "Tiny example",
+      "directed": false,
+      "weighted": true,
+      "difficulty": "easy",
+      "dlsLimit": 2,
+      "start": "S",
+      "goal": "G",
+      "nodes": [
+        { "id": "S", "x": 100, "y": 250, "h": 4 },
+        { "id": "A", "x": 400, "y": 120, "h": 2 },
+        { "id": "G", "x": 700, "y": 250, "h": 0 }
+      ],
+      "edges": [
+        { "from": "S", "to": "A", "w": 2 },
+        { "from": "A", "to": "G", "w": 2 },
+        { "from": "S", "to": "G", "w": 7 }
+      ]
+    }
+  ]
+}
